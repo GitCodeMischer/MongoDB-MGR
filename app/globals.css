@@ -74,15 +74,37 @@
     --sidebar-border: 240 8% 12%;
     --sidebar-ring: 217.2 91.2% 59.8%;
   }
-}
 
-@layer base {
   * {
     @apply border-border;
   }
+
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground antialiased overflow-hidden;
     font-feature-settings: "rlig" 1, "calt" 1;
+  }
+
+  /* Scrollbar Styles */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-background/50;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-muted rounded-full hover:bg-muted/80 transition-colors;
+  }
+
+  /* Custom scrollbar for dark mode */
+  .dark ::-webkit-scrollbar-track {
+    @apply bg-background/30;
+  }
+
+  .dark ::-webkit-scrollbar-thumb {
+    @apply bg-muted/50 hover:bg-muted/70;
   }
 }
 
@@ -125,7 +147,6 @@
   border-bottom: 1px solid rgba(209, 213, 219, 0.3);
   box-shadow: 0 4px 20px -5px rgba(0, 0, 0, 0.1);
   height: auto; /* Allow height to adjust based on content */
-  min-height: 6rem; /* Minimum height to maintain consistency */
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -473,5 +494,40 @@
 
 .mongodb-connect-button:hover::after {
   left: 100%;
+}
+
+@keyframes ping-slow {
+  75%, 100% {
+    transform: scale(2);
+    opacity: 0;
+  }
+}
+
+@keyframes ping-slower {
+  75%, 100% {
+    transform: scale(1.75);
+    opacity: 0;
+  }
+}
+
+@keyframes ping-slowest {
+  75%, 100% {
+    transform: scale(1.5);
+    opacity: 0;
+  }
+}
+
+.animate-ping-slow {
+  animation: ping-slow 3s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+
+.animate-ping-slower {
+  animation: ping-slower 3s cubic-bezier(0, 0, 0.2, 1) infinite;
+  animation-delay: 0.5s;
+}
+
+.animate-ping-slowest {
+  animation: ping-slowest 3s cubic-bezier(0, 0, 0.2, 1) infinite;
+  animation-delay: 1s;
 }
 

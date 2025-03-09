@@ -74,7 +74,7 @@ export default function DashboardViewEnhanced() {
     <div className="space-y-6">
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div>
-          <h2 className="text-2xl font-bold">MongoDB Dashboard</h2>
+          <h2 className="text-2xl font-bold">MongoDB MGR</h2>
           <p className="text-sm text-muted-foreground">Overview of your MongoDB deployment</p>
         </div>
         <div className="flex items-center gap-2">

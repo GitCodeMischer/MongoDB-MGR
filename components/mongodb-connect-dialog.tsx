@@ -100,16 +100,55 @@ export function MongoDBConnectDialog({
   mode = 'create',
   existingConnection 
 }: MongoDBConnectDialogProps) {
+  const [mounted, setMounted] = React.useState(false)
   const [open, setOpen] = React.useState(false)
   const [isLoading, setIsLoading] = React.useState(false)
   const [error, setError] = React.useState<string | null>(null)
-  const [connectionName, setConnectionName] = React.useState(existingConnection?.name || "")
-  const [connectionString, setConnectionString] = React.useState(existingConnection?.uri || "")
-  const [connectionParams, setConnectionParams] = React.useState<ConnectionParams>(
-    existingConnection?.params || DEFAULT_PARAMS
-  )
+  const [connectionName, setConnectionName] = React.useState("")
+  const [connectionString, setConnectionString] = React.useState("")
+  const [connectionParams, setConnectionParams] = React.useState<ConnectionParams>(DEFAULT_PARAMS)
   const [selectedPreset, setSelectedPreset] = React.useState<string>("")
-  const { connections, addConnection, editConnection, updateConnectionStatus } = useMongoDBStore()
+  const { addConnection, editConnection, updateConnectionStatus } = useMongoDBStore()
+
+  const resetForm = React.useCallback(() => {
+    setConnectionName("")
+    setConnectionString("")
+    setConnectionParams(DEFAULT_PARAMS)
+    setSelectedPreset("")
+    setError(null)
+    setIsLoading(false)
+  }, [])
+
+  // Handle hydration
+  React.useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  // Reset form when dialog opens with existing connection
+  React.useEffect(() => {
+    if (mounted && open && existingConnection) {
+      setConnectionName(existingConnection.name)
+      setConnectionString(existingConnection.uri)
+      setConnectionParams({
+        ...DEFAULT_PARAMS,
+        ...existingConnection.params,
+      })
+      setError(null)
+    } else if (!open) {
+      resetForm()
+    }
+  }, [open, existingConnection, mounted, resetForm])
+
+  // Cleanup on unmount
+  React.useEffect(() => {
+    return () => {
+      resetForm()
+    }
+  }, [resetForm])
+
+  if (!mounted) {
+    return null
+  }
 
   const handlePresetChange = (preset: string) => {
     setSelectedPreset(preset)
@@ -216,12 +255,12 @@ export function MongoDBConnectDialog({
         isActive: true,
         status: 'connected',
         lastConnected: new Date().toISOString(),
-        activeConnections: 1,
-        operationsPerSecond: 0,
-        storageUsed: 0,
-        storageLimit: 0,
-        avgResponseTime: 0,
-        params: connectionParams
+        params: {
+          host: connectionParams.host,
+          port: connectionParams.port,
+          database: connectionParams.database,
+          ssl: connectionParams.ssl,
+        }
       }
 
       if (mode === 'edit' && existingConnection) {
@@ -235,7 +274,6 @@ export function MongoDBConnectDialog({
       }
 
       setOpen(false)
-      resetForm()
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Failed to connect to MongoDB'
       setError(errorMessage)
@@ -247,20 +285,16 @@ export function MongoDBConnectDialog({
     }
   }
 
-  const resetForm = () => {
-    if (!existingConnection) {
-      setConnectionName("")
-      setConnectionString("")
-      setConnectionParams(DEFAULT_PARAMS)
-      setSelectedPreset("")
-    }
-    setError(null)
-  }
-
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog open={open} onOpenChange={(newOpen) => {
+      if (!isLoading) {
+        setOpen(newOpen)
+      }
+    }}>
       <DialogTrigger asChild>
-        {children}
+        <div onClick={() => setOpen(true)}>
+          {children}
+        </div>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[600px] max-h-[90vh] dialog-content mongodb-dialog-content">
         <DialogHeader className="mongodb-dialog-header">

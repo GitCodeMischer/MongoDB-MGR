@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import { persist } from 'zustand/middleware'
+import { persist, createJSONStorage } from 'zustand/middleware'
 
 export interface MongoDBDatabase {
   name: string
@@ -19,19 +19,19 @@ export interface MongoDBCollection {
   createdAtIndexesSize: number
 }
 
+// Define the possible connection statuses as a const array
+const CONNECTION_STATUSES = ['connected', 'disconnected', 'connecting', 'error'] as const;
+export type ConnectionStatus = 'connected' | 'connecting' | 'disconnected' | 'error';
+
 export interface MongoDBConnection {
   id: string
   name: string
   uri: string
   isActive: boolean
-  status: 'connected' | 'disconnected' | 'connecting' | 'error'
+  status: ConnectionStatus
   error?: string
   lastConnected?: string
-  activeConnections: number
-  operationsPerSecond: number
-  storageUsed: number
-  storageLimit: number
-  avgResponseTime: number
+  params?: Record<string, any>
 }
 
 interface MongoDBState {
@@ -43,8 +43,9 @@ interface MongoDBState {
   setActiveConnection: (id: string | null) => void
   setDatabases: (databases: MongoDBDatabase[]) => void
   updateCollections: (dbName: string, collections: MongoDBCollection[]) => void
-  updateConnectionStatus: (id: string, status: MongoDBConnection['status'], error?: string) => void
+  updateConnectionStatus: (id: string, status: ConnectionStatus, error?: string) => void
   editConnection: (id: string, updates: Partial<MongoDBConnection>) => void
+  cleanup: () => void
 }
 
 export const useMongoDBStore = create<MongoDBState>()(
@@ -55,7 +56,7 @@ export const useMongoDBStore = create<MongoDBState>()(
       databases: [],
       addConnection: (connection) =>
         set((state) => ({
-          connections: [...state.connections, connection],
+          connections: [...state.connections.slice(-4), connection],
           activeConnection: connection,
         })),
       removeConnection: (id) =>
@@ -65,18 +66,24 @@ export const useMongoDBStore = create<MongoDBState>()(
           databases: state.activeConnection?.id === id ? [] : state.databases,
         })),
       setActiveConnection: (id) =>
-        set((state) => ({
-          activeConnection: id ? state.connections.find((conn) => conn.id === id) || null : null,
-          databases: id ? state.databases : [],
-        })),
+        set((state) => {
+          const connection = id ? state.connections.find((conn) => conn.id === id) : null
+          return {
+            activeConnection: connection ? { ...connection, status: 'connected' } : null,
+            databases: [],
+          }
+        }),
       setDatabases: (databases) =>
         set(() => ({
-          databases,
+          databases: databases.map(db => ({
+            ...db,
+            collections: db.collections?.slice(0, 50)
+          })),
         })),
       updateCollections: (dbName, collections) =>
         set((state) => ({
           databases: state.databases.map((db) =>
-            db.name === dbName ? { ...db, collections } : db
+            db.name === dbName ? { ...db, collections: collections.slice(0, 50) } : db
           ),
         })),
       updateConnectionStatus: (id, status, error) =>
@@ -111,11 +118,84 @@ export const useMongoDBStore = create<MongoDBState>()(
               ? { ...state.activeConnection, ...updates }
               : state.activeConnection,
         })),
+      cleanup: () =>
+        set(() => ({
+          connections: [],
+          activeConnection: null,
+          databases: [],
+        })),
     }),
     {
       name: 'mongodb-store',
-      version: 1,
-      storage: typeof window !== 'undefined' ? window.localStorage : undefined,
+      version: 2,
+      storage: createJSONStorage(() => localStorage),
+      partialize: (state) => ({
+        // Persist both connections and active connection
+        connections: state.connections.map(conn => ({
+          id: conn.id,
+          name: conn.name,
+          uri: conn.uri,
+          status: conn.status,
+          lastConnected: conn.lastConnected,
+          params: conn.params,
+          isActive: conn.isActive
+        })),
+        activeConnection: state.activeConnection ? {
+          id: state.activeConnection.id,
+          name: state.activeConnection.name,
+          uri: state.activeConnection.uri,
+          status: state.activeConnection.status,
+          lastConnected: state.activeConnection.lastConnected,
+          params: state.activeConnection.params,
+          isActive: true
+        } : null
+      }),
+      onRehydrateStorage: () => (state) => {
+        if (!state) return;
+
+        // If there was an active connection, try to reconnect
+        if (state.activeConnection) {
+          const reconnect = async () => {
+            try {
+              const response = await fetch('/api/mongodb/connect', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                  uri: state.activeConnection!.uri,
+                })
+              });
+
+              const data = await response.json();
+              
+              if (response.ok && data.success) {
+                state.activeConnection!.status = 'connected';
+                state.activeConnection!.lastConnected = new Date().toISOString();
+              } else {
+                state.activeConnection!.status = 'error';
+                state.activeConnection!.error = 'Failed to reconnect';
+              }
+            } catch (error) {
+              state.activeConnection!.status = 'error';
+              state.activeConnection!.error = 'Failed to reconnect';
+            }
+          };
+
+          // Set initial connecting state
+          state.activeConnection.status = 'connecting';
+          
+          // Attempt to reconnect
+          reconnect();
+        }
+
+        // Update all other connections to disconnected
+        state.connections = state.connections.map(conn => ({
+          ...conn,
+          status: conn.id === state.activeConnection?.id ? conn.status : 'disconnected',
+          error: undefined
+        }));
+      }
     }
   )
 )
@@ -130,6 +210,7 @@ export function formatBytes(bytes: number): string {
 }
 
 // Helper function to format numbers with commas
-export function formatNumber(num: number): string {
+export function formatNumber(num: number | undefined | null): string {
+  if (num === undefined || num === null) return '0'
   return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
 } 
