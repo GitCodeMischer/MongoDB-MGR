@@ -2,47 +2,22 @@
 
 import { Moon, Sun } from "lucide-react"
 import { useTheme } from "next-themes"
-import { useEffect, useState } from "react"
-import { Switch } from "@/components/ui/switch"
-import { Label } from "@/components/ui/label"
+import { Button } from "@/components/ui/button"
 
 export function ThemeToggle() {
-  const { setTheme, theme, resolvedTheme } = useTheme()
-  const [mounted, setMounted] = useState(false)
-
-  // Ensure component is mounted to avoid hydration mismatch
-  useEffect(() => {
-    setMounted(true)
-  }, [])
-
-  if (!mounted) {
-    return (
-      <div className="flex items-center gap-2">
-        <div className="h-5 w-9 rounded-full bg-muted" />
-        <Sun className="h-4 w-4 text-muted-foreground" />
-      </div>
-    )
-  }
-
-  const isDark = theme === "dark" || resolvedTheme === "dark"
-
-  const toggleTheme = () => {
-    setTheme(isDark ? "light" : "dark")
-  }
+  const { theme, setTheme } = useTheme()
 
   return (
-    <div className="flex items-center gap-2">
-      <Switch
-        id="theme-toggle"
-        checked={isDark}
-        onCheckedChange={toggleTheme}
-        className="data-[state=checked]:bg-primary"
-      />
-      <Label htmlFor="theme-toggle" className="sr-only">
-        Toggle theme
-      </Label>
-      {isDark ? <Moon className="h-4 w-4 text-primary" /> : <Sun className="h-4 w-4 text-amber-500" />}
-    </div>
+    <Button
+      variant="ghost"
+      size="icon"
+      className="h-9 w-9 glassmorphism-button"
+      onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+    >
+      <Sun className="h-4 w-4 rotate-0 scale-100 transition-transform dark:-rotate-90 dark:scale-0" />
+      <Moon className="absolute h-4 w-4 rotate-90 scale-0 transition-transform dark:rotate-0 dark:scale-100" />
+      <span className="sr-only">Toggle theme</span>
+    </Button>
   )
 }
 

@@ -44,34 +44,34 @@
   }
 
   .dark {
-    --background: 240 10% 3.9%;
+    --background: 240 10% 4%;
     --foreground: 0 0% 98%;
-    --card: 240 10% 3.9%;
+    --card: 240 10% 4%;
     --card-foreground: 0 0% 98%;
-    --popover: 240 10% 3.9%;
+    --popover: 240 10% 4%;
     --popover-foreground: 0 0% 98%;
     --primary: 0 0% 98%;
-    --primary-foreground: 240 5.9% 10%;
-    --secondary: 240 3.7% 15.9%;
+    --primary-foreground: 240 10% 4%;
+    --secondary: 240 8% 12%;
     --secondary-foreground: 0 0% 98%;
-    --muted: 240 3.7% 15.9%;
-    --muted-foreground: 240 5% 64.9%;
-    --accent: 240 3.7% 15.9%;
+    --muted: 240 8% 12%;
+    --muted-foreground: 240 5% 65%;
+    --accent: 240 8% 12%;
     --accent-foreground: 0 0% 98%;
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 0 0% 98%;
-    --border: 240 3.7% 15.9%;
-    --input: 240 3.7% 15.9%;
+    --border: 240 8% 12%;
+    --input: 240 8% 12%;
     --ring: 240 4.9% 83.9%;
 
     /* Sidebar variables */
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
+    --sidebar-background: 240 10% 4%;
+    --sidebar-foreground: 0 0% 98%;
     --sidebar-primary: 0 0% 98%;
-    --sidebar-primary-foreground: 240 5.9% 10%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
+    --sidebar-primary-foreground: 240 10% 4%;
+    --sidebar-accent: 240 8% 12%;
+    --sidebar-accent-foreground: 0 0% 98%;
+    --sidebar-border: 240 8% 12%;
     --sidebar-ring: 217.2 91.2% 59.8%;
   }
 }
@@ -82,7 +82,13 @@
   }
   body {
     @apply bg-background text-foreground;
+    font-feature-settings: "rlig" 1, "calt" 1;
   }
+}
+
+/* Theme transition */
+* {
+  transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
 }
 
 .bg-sidebar {
@@ -113,7 +119,7 @@
 
 /* Enhanced Glassmorphism Effects */
 .glassmorphism-header {
-  background: rgba(255, 255, 255, 0.7);
+  background: rgba(255, 255, 255, 0.8);
   backdrop-filter: blur(12px) saturate(180%);
   -webkit-backdrop-filter: blur(12px) saturate(180%);
   border-bottom: 1px solid rgba(209, 213, 219, 0.3);
@@ -126,105 +132,112 @@
 }
 
 .dark .glassmorphism-header {
-  background: rgba(17, 17, 27, 0.75);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 4px 20px -5px rgba(0, 0, 0, 0.3);
+  background: rgba(15, 15, 20, 0.75);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  box-shadow: 0 4px 20px -5px rgba(0, 0, 0, 0.2);
 }
 
 .glassmorphism-card {
   background: rgba(255, 255, 255, 0.7);
-  backdrop-filter: blur(8px) saturate(150%);
-  -webkit-backdrop-filter: blur(8px) saturate(150%);
+  backdrop-filter: blur(12px) saturate(180%);
+  -webkit-backdrop-filter: blur(12px) saturate(180%);
   border: 1px solid rgba(209, 213, 219, 0.3);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.05);
-  transition: all 0.2s ease;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
   overflow: hidden;
 }
 
-.glassmorphism-card:hover {
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
-  transform: translateY(-2px);
+.dark .glassmorphism-card {
+  background: rgba(15, 15, 20, 0.75);
+  border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
-.dark .glassmorphism-card {
-  background: rgba(30, 30, 46, 0.7);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+.glassmorphism-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px -5px rgba(0, 0, 0, 0.1);
+}
+
+.dark .glassmorphism-card:hover {
+  box-shadow: 0 8px 20px -5px rgba(0, 0, 0, 0.2);
 }
 
 .glassmorphism-button {
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   transition: all 0.2s ease;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.dark .glassmorphism-button {
+  background: rgba(255, 255, 255, 0.05);
 }
 
 .glassmorphism-button:hover {
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
-  transform: translateY(-1px);
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.dark .glassmorphism-button:hover {
+  background: rgba(255, 255, 255, 0.08);
 }
 
 .glassmorphism-primary-button {
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  background: linear-gradient(to right, hsl(var(--primary)), hsl(var(--primary)/0.8));
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   transition: all 0.2s ease;
 }
 
 .glassmorphism-primary-button:hover {
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
   transform: translateY(-1px);
+  box-shadow: 0 4px 12px -2px hsl(var(--primary)/0.3);
 }
 
 .glassmorphism-badge {
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
 }
 
 .glassmorphism-input {
-  background: rgba(255, 255, 255, 0.8);
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
-  border: 1px solid rgba(209, 213, 219, 0.4);
-  transition: all 0.2s ease;
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
 }
 
 .dark .glassmorphism-input {
-  background: rgba(30, 30, 46, 0.6);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.03);
 }
 
 .glassmorphism-tabs {
-  overflow: hidden;
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(209, 213, 219, 0.3);
+  border-radius: var(--radius);
+}
+
+.dark .glassmorphism-tabs {
+  background: rgba(15, 15, 20, 0.75);
+  border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .glassmorphism-tabslist {
-  overflow-x: auto;
-  scrollbar-width: none;
-  -ms-overflow-style: none;
-  display: flex;
-  white-space: nowrap;
+  background: rgba(255, 255, 255, 0.5);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
 }
 
-.glassmorphism-tabslist::-webkit-scrollbar {
-  display: none;
-}
-
-@media (max-width: 640px) {
-  .glassmorphism-tabslist {
-    padding-bottom: 2px;
-  }
+.dark .glassmorphism-tabslist {
+  background: rgba(255, 255, 255, 0.03);
 }
 
 .glassmorphism-code-block {
-  background: rgba(248, 250, 252, 0.8);
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   overflow-x: auto;
   max-width: 100%;
 }
 
 .dark .glassmorphism-code-block {
-  background: rgba(15, 15, 20, 0.7);
+  background: rgba(15, 15, 20, 0.75);
 }
 
 .glassmorphism-code-block pre {
@@ -287,11 +300,7 @@
 
 /* Glow effects */
 .glow-effect-green {
-  box-shadow: 0 0 8px rgba(34, 197, 94, 0.6);
-}
-
-.dark .glow-effect-green {
-  box-shadow: 0 0 12px rgba(34, 197, 94, 0.8);
+  box-shadow: 0 0 8px rgba(34, 197, 94, 0.4);
 }
 
 /* Improved gradient effects */
@@ -327,5 +336,142 @@
     display: block;
     white-space: nowrap;
   }
+}
+
+/* Dialog improvements */
+.dialog-content {
+  max-height: 85vh;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: hsl(var(--muted)) transparent;
+}
+
+.dialog-content::-webkit-scrollbar {
+  width: 6px;
+}
+
+.dialog-content::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.dialog-content::-webkit-scrollbar-thumb {
+  background-color: hsl(var(--muted));
+  border-radius: 3px;
+}
+
+.dialog-content::-webkit-scrollbar-thumb:hover {
+  background-color: hsl(var(--muted-foreground));
+}
+
+/* Custom scrollbar for all scrollable content */
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: hsl(var(--muted)) transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background-color: hsl(var(--muted));
+  border-radius: 3px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background-color: hsl(var(--muted-foreground));
+}
+
+/* MongoDB Connection Dialog Animations */
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    transform: scale(0.95);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.mongodb-dialog-header {
+  animation: slideIn 0.3s ease-out;
+}
+
+.mongodb-dialog-content {
+  animation: fadeIn 0.3s ease-out;
+}
+
+.mongodb-dialog-footer {
+  animation: slideIn 0.3s ease-out;
+}
+
+.mongodb-preset-button {
+  transition: all 0.2s ease;
+}
+
+.mongodb-preset-button:hover {
+  transform: translateY(-1px);
+}
+
+.mongodb-preset-button.selected {
+  animation: scaleIn 0.2s ease-out;
+}
+
+.mongodb-input-group {
+  animation: slideIn 0.2s ease-out;
+}
+
+.mongodb-tab-content {
+  animation: fadeIn 0.3s ease-out;
+}
+
+.mongodb-connect-button {
+  position: relative;
+  overflow: hidden;
+}
+
+.mongodb-connect-button::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 200%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.2),
+    transparent
+  );
+  transition: 0.5s;
+}
+
+.mongodb-connect-button:hover::after {
+  left: 100%;
 }
 
