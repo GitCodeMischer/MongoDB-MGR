@@ -21,6 +21,14 @@ const nextConfig = {
     parallelServerBuildTraces: true,
     parallelServerCompiles: true,
   },
+  output: 'standalone',
+  // Ensure we're properly handling the output
+  poweredByHeader: false,
+  reactStrictMode: true,
+  // Optimize for production
+  swcMinify: true,
+  compress: true,
+  productionBrowserSourceMaps: false,
 }
 
 mergeConfig(nextConfig, userConfig)
