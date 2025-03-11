@@ -1,6 +1,6 @@
 <div align="center">
 
-# 📊 MongoDB Statistics
+# 📊 MongoDB Manager MGR
 
 <img src="https://img.shields.io/badge/MongoDB-4EA94B?style=for-the-badge&logo=mongodb&logoColor=white"/>
 <img src="https://img.shields.io/badge/Next.js-000000?style=for-the-badge&logo=nextdotjs&logoColor=white"/>
