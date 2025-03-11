@@ -39,6 +39,7 @@ import {
 } from "lucide-react"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { useMongoDBStore, type MongoDBConnection } from "@/lib/mongodb"
+import { generateUUID } from '@/utils/uuid'
 
 interface MongoDBConnectDialogProps {
   children: React.ReactNode
@@ -226,7 +227,7 @@ export function MongoDBConnectDialog({
     setError(null)
 
     try {
-      const connectionId = existingConnection?.id || crypto.randomUUID()
+      const connectionId = existingConnection?.id || generateUUID()
       
       // Update connection status to connecting
       updateConnectionStatus(connectionId, 'connecting')
